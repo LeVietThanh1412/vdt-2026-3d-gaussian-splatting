@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  # ── Build environment ───────────────────────────────────
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gsplat-ar-builder:latest
+    volumes:
+      - ./data/input:/app/data/input:ro
+      - ./data/output:/app/data/output
+    entrypoint: ["/app/build/gsplat_ar"]
+    command:
+      - "-i"
+      - "/app/data/input/scene.ply"
+      - "-o"
+      - "/app/data/output/scene.glb"
+      - "-p"
+      - "0.1"
+      - "-f"
+      - "50000"
+
+  # ── Web demo server ────────────────────────────────────
+  web_demo:
+    image: python:3.11-slim
+    working_dir: /app/web_demo
+    volumes:
+      - ./web_demo:/app/web_demo:ro
+      - ./data/output:/app/data/output:ro
+    ports:
+      - "8000:8000"
+    command: ["python3", "serve.py"]
+    depends_on:
+      builder:
+        condition: service_completed_successfully
