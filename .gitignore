@@ -77,11 +77,8 @@ Thumbs.db
 
 #Latex
 */out
-/reports/images/
 
 build/
 vcpkg/
 vcpkg_installed/
-data/input/*.ply
-data/output/*.glb
 *.tar.xz
