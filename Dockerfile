@@ -27,8 +27,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN chmod +x scripts/build.sh && \
-    ./vcpkg/bootstrap-vcpkg.sh && \
+RUN chmod +x scripts/*.sh && \
+    ./scripts/fetch_third_party.sh && \
     ./scripts/build.sh
 
 FROM python:3.9-slim AS web_demo
