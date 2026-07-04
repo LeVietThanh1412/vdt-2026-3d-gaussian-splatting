@@ -27,6 +27,26 @@ Input (.ply/.splat)
 - Tách occlusion mesh và navigation mesh
 - Xuất `.glb` cho WebXR / model-viewer / demo trên điện thoại
 - Có sẵn một web demo nhẹ bằng `model-viewer`
+## Minh họa kết quả (Demo)
+
+### 1. Sơ đồ xử lý (Pipeline Architecture)
+![Pipeline Architecture](reports/images/pipeline_architecture.png)
+
+### 2. So sánh trước và sau khi tối ưu hóa
+Dưới đây là so sánh trực quan giữa đám mây điểm Gaussian thô (đầu vào `.ply`) và mô hình lưới tam giác tối ưu (đầu ra `.glb`):
+
+| Đám mây điểm thô đầu vào (PLY) | Lưới tam giác tối ưu đầu ra (GLB) |
+| :---: | :---: |
+| **Flowers (Đầu vào: 25 MB)** <br> <img src="reports/images/before/flowers.png" width="380" /> | **Flowers (Đầu ra: 2.0 MB)** <br> <img src="reports/images/after/flowers.png" width="380" /> |
+| **Yanhuitlan (Đầu vào: 20 MB)** <br> <img src="reports/images/before/Yanhuitlan_Convento_Oax_PC.png" width="380" /> | **Yanhuitlan (Đầu ra: 2.0 MB)** <br> <img src="reports/images/after/Yanhuitlan_Convento_Oax_PC.png" width="380" /> |
+
+### 3. Giao diện Web Demo tích hợp AR
+Trang Web Demo cho phép tải động tệp tin `.glb`, xoay/phóng to thu nhỏ mô hình và hỗ trợ tính năng AR trực quan trên điện thoại:
+![Web Demo Screenshot](reports/images/web_demo_screenshot.png)
+
+### 4. Vận hành qua dòng lệnh (CLI)
+Luồng xử lý thời gian thực của công cụ `gsplat_ar` in chi tiết thông tin các stage qua terminal:
+![CLI execution](reports/images/output_cli.png)
 
 ## Cấu trúc thư mục
 
