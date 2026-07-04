@@ -38,10 +38,23 @@ MeshData MeshOptimizer::run(const MeshData& input, const OptimizeOptions& opts) 
         std::numeric_limits<double>::infinity(),
         1.0);
 
-    // Dọn dẹp tam giác suy biến và đỉnh/mặt trùng lặp
+    // Dọn dẹp cơ bản
     simplified->RemoveDegenerateTriangles();
     simplified->RemoveDuplicatedVertices();
     simplified->RemoveDuplicatedTriangles();
+
+    // ── Xóa các mảnh lưới nhỏ (Noise Pruning) ──
+    auto [cluster_ids, cluster_sizes, cluster_areas] = simplified->ClusterConnectedTriangles();
+    std::vector<size_t> triangles_to_remove;
+    for (size_t i = 0; i < simplified->triangles_.size(); ++i) {
+        if (cluster_sizes[cluster_ids[i]] < 100) {
+            triangles_to_remove.push_back(i);
+        }
+    }
+    simplified->RemoveTrianglesByIndex(triangles_to_remove);
+    simplified->RemoveUnreferencedVertices();
+    simplified = simplified->FilterSmoothLaplacian(2, 0.5);
+    simplified->OrientTriangles();
 
     if (opts.recompute_normals) {
         simplified->ComputeVertexNormals();

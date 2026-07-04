@@ -37,30 +37,52 @@ MeshData MeshGenerator::run(const std::vector<GaussianSplat>& splats,
         open3d::geometry::KDTreeSearchParamHybrid(/*bán_kính=*/0.1, /*số_láng_giềng_tối_đa=*/30));
     cloud->OrientNormalsConsistentTangentPlane(/*k=*/15);
 
+    // Kiểm tra hướng pháp tuyến trung bình theo trục Y. Nếu hướng xuống (âm), lật ngược lại toàn bộ.
+    double avg_y = 0.0;
+    for (const auto& normal : cloud->normals_) {
+        avg_y += normal.y();
+    }
+    if (!cloud->normals_.empty()) {
+        avg_y /= static_cast<double>(cloud->normals_.size());
+    }
+    if (avg_y < 0.0) {
+        std::cout << "[MESH_GEN] Phát hiện pháp tuyến hướng xuống dưới (avg_y = " << avg_y 
+                  << "). Đang lật ngược lại hướng lên trên." << std::endl;
+        for (auto& normal : cloud->normals_) {
+            normal = -normal;
+        }
+    }
+
     // ── 3. Tái tạo bề mặt Poisson ───────────────────────
     std::cout << "[MESH_GEN] Đang chạy tái tạo Poisson (độ sâu="
               << opts.depth << ") ..." << std::endl;
 
     std::shared_ptr<open3d::geometry::TriangleMesh> mesh;
     std::vector<double> densities;
-    std::tie(mesh, densities) =
-        open3d::geometry::TriangleMesh::CreateFromPointCloudPoisson(
-            *cloud, opts.depth, /*chiều_rộng=*/0, opts.scale, opts.linear_fit);
+    // Trong mesh_generator.cpp, tìm dòng này:
+    std::tie(mesh, densities) = open3d::geometry::TriangleMesh::CreateFromPointCloudPoisson(
+        *cloud, opts.depth, 0, 0.8f, opts.linear_fit);
 
     // ── 4. Cắt tỉa đỉnh có mật độ thấp ─────────────────
     if (!densities.empty()) {
-        // Tính ngưỡng mật độ dựa trên phần trăm (quantile)
+        // 1. Tính ngưỡng mật độ dựa trên phần trăm (quantile)
         std::vector<double> sorted_d = densities;
         std::sort(sorted_d.begin(), sorted_d.end());
-        size_t cutoff_idx = static_cast<size_t>(opts.density_quantile *
-                                                 static_cast<double>(sorted_d.size()));
+        
+        // Tăng density_quantile lên 0.05 hoặc 0.1 nếu ảnh vẫn xấu
+        size_t cutoff_idx = static_cast<size_t>(opts.density_quantile * static_cast<double>(sorted_d.size()));
         double density_threshold = sorted_d[cutoff_idx];
 
-        // Loại bỏ các đỉnh có mật độ dưới ngưỡng
+        // 2. Loại bỏ các đỉnh có mật độ dưới ngưỡng
         std::vector<size_t> remove_idx;
         for (size_t i = 0; i < densities.size(); ++i) {
-            if (densities[i] < density_threshold) remove_idx.push_back(i);
+            // Chỉ giữ lại những vùng có mật độ cao hơn ngưỡng
+            if (densities[i] < density_threshold) {
+                remove_idx.push_back(i);
+            }
         }
+        
+        // 3. Thực hiện xóa đỉnh (Hàm này của Open3D sẽ tự xóa các tam giác liên quan)
         mesh->RemoveVerticesByIndex(remove_idx);
     }
 
@@ -76,6 +98,12 @@ MeshData MeshGenerator::run(const std::vector<GaussianSplat>& splats,
         }
     }
 
+    // --- Sếp thêm vào đây ---
+    // OrientTriangles giúp lật các mặt tam giác về cùng một hướng
+    // để tránh hiện tượng "tàng hình" khi nhìn mặt sau
+    mesh->OrientTriangles();
+
+    // ComputeVertexNormals nên gọi lại sau khi lật mặt
     mesh->ComputeVertexNormals();
 
     // ── 6. Chuyển đổi sang MeshData bằng tiện ích dùng chung ──

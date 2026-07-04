@@ -210,6 +210,9 @@ static void add_gltf_mesh(tinygltf::Model& model,
     prim.attributes["COLOR_0"]  = ac_base + 2;
     prim.indices                = ac_base + 3;
     prim.mode                   = TINYGLTF_MODE_TRIANGLES;
+    if (!model.materials.empty()) {
+        prim.material = 0;
+    }
 
     tinygltf::Mesh gltf_mesh;
     gltf_mesh.name = node_name;
@@ -240,6 +243,12 @@ void GlbExporter::write(const MeshData& mesh,
     tinygltf::Model model;
     model.asset.version   = "2.0";
     model.asset.generator = "3DGS-AR-Pipeline";
+
+    // Khởi tạo một Material vẽ 2 mặt (Double-Sided)
+    tinygltf::Material material;
+    material.name = "DoubleSidedMaterial";
+    material.doubleSided = true;
+    model.materials.push_back(material);
 
     // Khởi tạo một scene và một buffer duy nhất
     tinygltf::Scene scene;
