@@ -2,7 +2,6 @@
   "name": "3dgs-ar-pipeline",
   "version-string": "1.0.0",
   "dependencies": [
-    "cli11",
-    "open3d"
+    "cli11"
   ]
 }
