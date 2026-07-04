@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     tar \
     pkg-config \
     libgl1-mesa-dev \
+    libglu1-mesa-dev \
     libegl1-mesa-dev \
     libxrandr-dev \
     libxinerama-dev \
