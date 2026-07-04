@@ -49,6 +49,7 @@ vcpkg_installed/
 .cache/
 .vs/
 .vscode/
+.cursor/
 
 Testing/
 
@@ -56,6 +57,7 @@ data/input/*.ply
 data/input/*.splat
 data/output/*.glb
 data/output/*.gltf
+data/
 
 # Web Demo
 web_demo/*.glb
@@ -72,3 +74,14 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+#Latex
+*/out
+/reports/images/
+
+build/
+vcpkg/
+vcpkg_installed/
+data/input/*.ply
+data/output/*.glb
+*.tar.xz

@@ -1,358 +1,274 @@
 <!doctype html>
-<html lang="en">
-  <head>
+<html lang="vi">
+
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>3DGS AR Pipeline Viewer</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <script
-      type="module"
-      src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"
-    ></script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-      :root {
-        --bg: #0b0f19;
-        --card-bg: rgba(17, 24, 39, 0.7);
-        --border: rgba(255, 255, 255, 0.08);
-        --text: #f3f4f6;
-        --text-muted: #9ca3af;
-        --accent: #3b82f6;
-        --accent-glow: rgba(59, 130, 246, 0.4);
-        --success: #10b981;
-      }
-
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        background-color: var(--bg);
-        color: var(--text);
-        font-family: 'Outfit', sans-serif;
-        min-height: 100vh;
-        overflow-x: hidden;
-        background-image: 
-          radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-          radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
-      }
-
-      .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 30px 20px;
-      }
-
-      header {
-        margin-bottom: 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 20px;
-      }
-
-      .logo-section h1 {
-        font-size: 28px;
-        font-weight: 700;
-        background: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-
-      .logo-section p {
-        font-size: 14px;
-        color: var(--text-muted);
-        margin-top: 4px;
-      }
-
-      .layout {
-        display: grid;
-        grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.6fr);
-        gap: 30px;
-      }
-
-      .card {
-        background: var(--card-bg);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid var(--border);
-        border-radius: 24px;
-        padding: 24px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      }
-
-      .viewer-container {
-        height: 65vh;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-      }
-
-      model-viewer {
-        width: 100%;
-        height: 100%;
-        border-radius: 16px;
-        background-color: rgba(0, 0, 0, 0.2);
-        --poster-color: transparent;
-      }
-
-      .controls-card {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
-
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      label {
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      select {
-        background: rgba(31, 41, 55, 0.8);
-        border: 1px solid var(--border);
-        color: var(--text);
-        padding: 12px 16px;
-        border-radius: 12px;
-        font-family: inherit;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        outline: none;
-      }
-
-      select:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 10px var(--accent-glow);
-      }
-
-      .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--success);
-        background: rgba(16, 185, 129, 0.1);
-        padding: 6px 12px;
-        border-radius: 99px;
-        align-self: flex-start;
-      }
-
-      .status-badge::before {
-        content: '';
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        background-color: var(--success);
-        border-radius: 50%;
-        box-shadow: 0 0 8px var(--success);
-      }
-
-      .info-section {
-        border-top: 1px solid var(--border);
-        padding-top: 20px;
-      }
-
-      .info-section h3 {
-        font-size: 16px;
-        margin-bottom: 12px;
-        font-weight: 600;
-      }
-
-      .guide-list {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .guide-list li {
-        display: flex;
-        gap: 12px;
-        font-size: 14px;
-        line-height: 1.5;
-        color: var(--text-muted);
-      }
-
-      .guide-list .num {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 24px;
-        height: 24px;
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--text);
-        border-radius: 50%;
-        font-size: 12px;
-        font-weight: 700;
-      }
-
-      /* Custom button to trigger AR */
-      .ar-button {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        color: white;
-        border: none;
-        padding: 14px 20px;
-        border-radius: 12px;
-        font-weight: 600;
-        font-family: inherit;
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-      }
-
-      .ar-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
-      }
-
-      @media (max-width: 900px) {
-        .layout {
-          grid-template-columns: 1fr;
+        :root {
+            --bg: #050505;
+            --viettel-red: #ED1C24;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.15);
+            --text: #ffffff;
+            --text-muted: #a0a0a0;
         }
-        .viewer-container {
-          height: 50vh;
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
-      }
+
+        /* Mặc định trên PC: 2 cột ngang */
+        .sidebar {
+            width: 360px;
+            padding: 40px;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            background: rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        .main-view {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #1a0505 0%, #050505 70%);
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100%;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .title span {
+            color: var(--viettel-red);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        select {
+            width: 100%;
+            padding: 14px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        select:hover {
+            border-color: var(--viettel-red);
+        }
+
+        .guide-box {
+            background: var(--glass);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            line-height: 1.6;
+        }
+
+        h4 {
+            margin-top: 0;
+            color: var(--viettel-red);
+        }
+
+        .action-buttons {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        button {
+            background: var(--viettel-red);
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(237, 28, 36, 0.3);
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        #record-btn {
+            background: #ffffff;
+            color: #050505;
+        }
+
+        /* FIX CHO MOBILE (IPHONE/ANDROID) */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 20px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .main-view {
+                width: 100%;
+                height: 60vh;
+                flex: none;
+            }
+
+            .action-buttons {
+                bottom: 15px;
+                right: 15px;
+                left: 15px;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            button {
+                padding: 12px;
+                font-size: 14px;
+                flex: 1;
+                text-align: center;
+            }
+
+            .guide-box {
+                display: none;
+            }
+
+            /* Ẩn bớt hướng dẫn trên mobile cho gọn */
+        }
     </style>
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <div class="logo-section">
-          <h1>3DGS AR Pipeline Viewer</h1>
-          <p>Mô hình 3D thực tế tăng cường (AR) đã được tối ưu hóa hình học</p>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div>
+            <div class="title">3DGS <span>AR</span> Viewer</div>
+            <div class="subtitle">Pipeline tối ưu hóa dữ liệu</div>
         </div>
-        <div class="status-badge" id="server-status">Pipeline Connected</div>
-      </header>
-
-      <main class="layout">
-        <!-- 3D View Card -->
-        <section class="card viewer-container">
-          <model-viewer
-            id="viewer"
-            src=""
-            ar
-            ar-modes="webxr scene-viewer quick-look"
-            camera-controls
-            auto-rotate
-            shadow-intensity="1"
-            environment-image="neutral"
-            exposure="1.0"
-          >
-            <button slot="ar-button" class="ar-button" style="position: absolute; bottom: 20px; right: 20px;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-                <line x1="12" y1="22.08" x2="12" y2="12" />
-              </svg>
-              Xem thực tế ảo (AR)
-            </button>
-          </model-viewer>
-        </section>
-
-        <!-- Controls Card -->
-        <aside class="card controls-card">
-          <div class="form-group">
-            <label for="model-selector">Chọn mô hình kết quả</label>
-            <select id="model-selector">
-              <option value="">Đang tìm kiếm mô hình...</option>
-            </select>
-          </div>
-
-          <div class="info-section">
-            <h3>Cấu trúc Mesh AR</h3>
-            <p style="font-size: 14px; margin-bottom: 20px;">
-              Mô hình chứa hai lớp riêng biệt: <strong>OcclusionMesh</strong> (đóng vai trò vật cản che khuất) và <strong>NavMesh</strong> (bản đồ di chuyển và nhận diện sàn nhà).
-            </p>
-
-            <h3 style="margin-bottom: 12px;">Hướng dẫn xem AR trên Mobile</h3>
-            <ul class="guide-list">
-              <li>
-                <span class="num">1</span>
-                <div>Đảm bảo điện thoại của bạn kết nối **cùng mạng Wi-Fi/LAN** với máy tính này.</div>
-              </li>
-              <li>
-                <span class="num">2</span>
-                <div id="lan-ip-info">
-                  Truy cập URL mạng cục bộ hiển thị trên terminal server để xem demo.
-                </div>
-              </li>
-              <li>
-                <span class="num">3</span>
-                <div>Nhấp chọn nút **"Xem thực tế ảo (AR)"** trên màn hình điện thoại để đặt mô hình vào không gian thực tế.</div>
-              </li>
+        <select id="model-selector">
+            <option>Đang quét thư mục output...</option>
+        </select>
+        <div class="guide-box">
+            <h4>Cấu trúc Mesh</h4>
+            <ul style="padding-left: 20px; color: var(--text-muted)">
+                <li><b>Occlusion:</b> Che khuất ảo</li>
+                <li><b>NavMesh:</b> Nhận diện sàn</li>
             </ul>
-          </div>
-        </aside>
-      </main>
-    </div>
+        </div>
+    </aside>
+
+    <main class="main-view">
+        <model-viewer id="viewer" with-credentials ar ar-modes="webxr scene-viewer quick-look" camera-controls
+            auto-rotate environment-image="neutral" shadow-intensity="1" scale="1 1 1">
+            <div class="action-buttons">
+                <button id="record-btn">🎥 Quay Web</button>
+                <button id="ar-trigger">🚀 Mở AR</button>
+            </div>
+        </model-viewer>
+    </main>
 
     <script>
-      const selector = document.getElementById('model-selector');
-      const viewer = document.getElementById('viewer');
+        const selector = document.getElementById('model-selector');
+        const viewer = document.getElementById('viewer');
 
-      // Fetch list of models from backend api
-      async function loadModels() {
-        try {
-          const res = await fetch('/api/models');
-          const models = await res.json();
-          
-          selector.innerHTML = '';
-          
-          if (models.length === 0) {
-            selector.innerHTML = '<option value="">Không tìm thấy mô hình .glb nào</option>';
-            return;
-          }
-          
-          models.forEach((model, index) => {
-            const opt = document.createElement('option');
-            opt.value = `/data/output/${model}`;
-            opt.textContent = model;
-            selector.appendChild(opt);
-          });
-
-          // Set default source to first model
-          selectModel(models[0]);
-        } catch (e) {
-          console.error("Failed to load models list", e);
-          selector.innerHTML = '<option value="">Lỗi kết nối Server API</option>';
+        async function loadModels() {
+            try {
+                // Thêm header để ép Ngrok bỏ qua trang cảnh báo
+                const res = await fetch('/api/models', {
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true'
+                    }
+                });
+                const models = await res.json();
+                selector.innerHTML = models.map(m => `<option value="/data/output/${m}">${m}</option>`).join('');
+                if (models.length > 0) {
+                    viewer.src = selector.value;
+                }
+            } catch (e) {
+                selector.innerHTML = "<option>Lỗi tải model (Ngrok chặn)!</option>";
+                console.error(e);
+            }
         }
-      }
 
-      function selectModel(modelName) {
-        viewer.src = `/data/output/${modelName}`;
-      }
+        selector.onchange = (e) => viewer.src = e.target.value;
+        loadModels();
 
-      selector.addEventListener('change', (e) => {
-        if (e.target.value) {
-          viewer.src = e.target.value;
-        }
-      });
+        viewer.addEventListener('load', () => {
+            if (viewer.model && viewer.model.materials) {
+                viewer.model.materials.forEach(m => m.setDoubleSided(true));
+            }
+        });
 
-      // Initialize
-      loadModels();
+        // Kích hoạt AR
+        document.getElementById('ar-trigger').addEventListener('click', () => {
+            if (viewer.canActivateAR) {
+                viewer.activateAR();
+            } else {
+                alert("Máy không hỗ trợ AR hoặc sếp chưa cho phép truy cập Camera!");
+            }
+        });
+
+        // Quay Video
+        let mediaRecorder;
+        let recordedChunks = [];
+        document.getElementById('record-btn').addEventListener('click', async () => {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                document.getElementById('record-btn').textContent = '🎥 Quay Web';
+            } else {
+                try {
+                    const canvas = viewer.shadowRoot.querySelector('canvas');
+                    if (!canvas) return;
+                    const stream = canvas.captureStream(30);
+                    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+                    recordedChunks = [];
+                    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `3DGS_Demo_${new Date().getTime()}.webm`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    };
+                    mediaRecorder.start();
+                    document.getElementById('record-btn').textContent = '⏹ Dừng Quay';
+                } catch (err) { alert("Trình duyệt không hỗ trợ quay video."); }
+            }
+        });
     </script>
-  </body>
+</body>
+
 </html>

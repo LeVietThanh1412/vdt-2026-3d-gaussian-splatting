@@ -35,7 +35,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
 
 with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
     print(f"=== 3DGS AR Web Server ===")
-    print(f" -> Local Host      : http://localhost:{PORT}")
+    print(f" -> Local Host      : http://localhost:{PORT}/web_demo/")
     print(f" -> Network Access  : http://<your-lan-ip>:{PORT} (for mobile AR)")
     print(f" -> Project Folder  : {PROJECT_ROOT}")
     print("==========================")
