@@ -38,6 +38,6 @@ for f in "$INPUT_DIR"/*.ply; do
     if [ $? -eq 0 ]; then
         echo "  [OK] Đã xong: ${BASENAME}.glb"
     else
-        echo "  [LỖI] Xảy ra lỗi. Xem log tại: $LOG_DIR/${BASENAME}.log"
+        echo "  [LỖI] Xem log tại: $LOG_DIR/${BASENAME}.log"
     fi
 done

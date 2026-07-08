@@ -57,7 +57,7 @@ ensure_open3d() {
 	tar -xf "$archive_path" -C "$TP_DIR"
 
 	if [ ! -d "$OPEN3D_DIR" ]; then
-		echo "[Open3D] Lỗi: giải nén xong mà không thấy thư mục mong đợi: $OPEN3D_DIR" >&2
+		echo "[Open3D] Lỗi: giải nén xong mà không thấy thư mục: $OPEN3D_DIR" >&2
 		exit 1
 	fi
 }
@@ -78,7 +78,6 @@ download "https://raw.githubusercontent.com/nothings/stb/master/stb_image_write.
 
 ensure_open3d
 
-echo "Đã xong."
 echo "- vcpkg: $VCPKG_DIR"
 echo "- Open3D SDK: $OPEN3D_DIR"
 echo "- Thư viện header-only: $TP_DIR"

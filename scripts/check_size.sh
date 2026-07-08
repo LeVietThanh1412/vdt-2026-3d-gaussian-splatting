@@ -8,10 +8,8 @@ for f in "$INPUT_DIR"/*.ply; do
     [ -e "$f" ] || continue
     BASENAME=$(basename "$f" .ply)
     
-    # Lấy size input
     INPUT_SIZE=$(du -sh "$f" | cut -f1)
     
-    # Lấy size output (nếu tồn tại)
     OUT_FILE="$OUTPUT_DIR/${BASENAME}.glb"
     if [ -f "$OUT_FILE" ]; then
         OUTPUT_SIZE=$(du -sh "$OUT_FILE" | cut -f1)

@@ -65,54 +65,144 @@ echo "Đầu vào : $SELECTED"
 echo "Đầu ra  : $OUTPUT_FILE"
 echo ""
 
-# ── Pipeline parameters (with sensible defaults) ─────────
-OPACITY_DEFAULT=${OPACITY:-0.15}
-DEPTH_DEFAULT=${DEPTH:-9}
-DENSITY_Q_DEFAULT=${DENSITY_Q:-0.05}
-FACES_DEFAULT=${FACES:-50000}
-NAV_SLOPE_DEFAULT=${NAV_SLOPE:-45.0}
+PRUNE="0.15"
+MAX_SCALE="10.0"
+SOR_K="30"
+SOR_STD="2.0"
+NO_SOR="false"
+DEPTH="9"
+DENSITY_Q="0.05"
+FACES="50000"
+NAV_SLOPE="45.0"
 
-echo "Tham số (có thể ghi đè bằng biến môi trường: OPACITY, DEPTH, DENSITY_Q, FACES, NAV_SLOPE):"
-echo "Ngưỡng opacity    : $OPACITY_DEFAULT"
-echo "Độ sâu Poisson    : $DEPTH_DEFAULT"
-echo "Ngưỡng density    : $DENSITY_Q_DEFAULT"
-echo "Số mặt mục tiêu   : $FACES_DEFAULT"
-echo "Góc nav slope     : $NAV_SLOPE_DEFAULT°"
-echo ""
-
-read -r -p "Nhập 5 giá trị cách nhau bằng dấu cách (opacity depth density_q faces nav_slope), hoặc nhấn Enter để dùng mặc định: " PARAM_LINE
-
-if [ -n "$PARAM_LINE" ]; then
-  read -r OPACITY DEPTH DENSITY_Q FACES NAV_SLOPE <<< "$PARAM_LINE"
-  if [ -z "${NAV_SLOPE:-}" ]; then
-    echo "Cần đúng 5 giá trị: opacity depth density_q faces nav_slope" >&2
-    exit 1
+while true; do
+  echo "  [1]  Đầu vào (Input)           : $SELECTED"
+  echo "  [2]  Đầu ra (Output)           : $OUTPUT_FILE"
+  echo "  [3]  Lọc Opacity (--prune)     : $PRUNE"
+  echo "  [4]  Tỉ lệ tối đa (--max-scale): $MAX_SCALE"
+  echo "  [5]  Láng giềng kNN (--sor-k)  : $SOR_K"
+  echo "  [6]  Độ lệch chuẩn (--sor-std) : $SOR_STD"
+  echo "  [7]  Tắt lọc SOR (--no-sor)    : $NO_SOR"
+  echo "  [8]  Độ sâu Poisson (--depth)  : $DEPTH"
+  echo "  [9]  Phân vị mật độ (--density): $DENSITY_Q"
+  echo "  [10] Số mặt mục tiêu (--faces) : $FACES"
+  echo "  [11] Góc nghiêng (--nav-slope) : $NAV_SLOPE"
+  read -rp "Chọn mục để sửa [1-11, R, Q] (Mặc định: R): " CHOICE
+  
+  if [ -z "$CHOICE" ] || [ "$CHOICE" = "R" ] || [ "$CHOICE" = "r" ]; then
+    break
+  elif [ "$CHOICE" = "Q" ] || [ "$CHOICE" = "q" ]; then
+    exit 0
   fi
+  
+  case "$CHOICE" in
+    1)
+      echo "Các file trong data/input/:"
+      for i in "${!PLY_FILES[@]}"; do
+        printf "  [%d] %s\n" $((i + 1)) "$(basename "${PLY_FILES[$i]}")"
+      done
+      read -rp "Chọn số file mới: " NEW_SEL
+      if [[ "$NEW_SEL" =~ ^[0-9]+$ ]] && [ "$NEW_SEL" -ge 1 ] && [ "$NEW_SEL" -le ${#PLY_FILES[@]} ]; then
+        SELECTED="${PLY_FILES[$((NEW_SEL - 1))]}"
+        INPUT_BASENAME=$(basename "$SELECTED" .ply)
+        OUTPUT_FILE="$OUTPUT_DIR/${INPUT_BASENAME}.glb"
+      else
+        echo "Lựa chọn không hợp lệ."
+      fi
+      ;;
+    2)
+      read -rp "Nhập đường dẫn file đầu ra mới (Mặc định: $OUTPUT_FILE): " NEW_VAL
+      if [ -n "$NEW_VAL" ]; then
+        OUTPUT_FILE="$NEW_VAL"
+      fi
+      ;;
+    3)
+      read -rp "Nhập ngưỡng opacity (0.0 - 1.0) [$PRUNE]: " NEW_VAL
+      if [ -n "$NEW_VAL" ]; then PRUNE="$NEW_VAL"; fi
+      ;;
+    4)
+      read -rp "Nhập tỉ lệ vật lý tối đa [$MAX_SCALE]: " NEW_VAL
+      if [ -n "$NEW_VAL" ]; then MAX_SCALE="$NEW_VAL"; fi
+      ;;
+    5)
+      read -rp "Nhập số láng giềng kNN cho SOR [$SOR_K]: " NEW_VAL
+      if [ -n "$NEW_VAL" ]; then SOR_K="$NEW_VAL"; fi
+      ;;
+    6)
+      read -rp "Nhập hệ số nhân độ lệch chuẩn cho SOR [$SOR_STD]: " NEW_VAL
+      if [ -n "$NEW_VAL" ]; then SOR_STD="$NEW_VAL"; fi
+      ;;
+    7)
+      if [ "$NO_SOR" = "true" ]; then
+        NO_SOR="false"
+      else
+        NO_SOR="true"
+      fi
+      echo "Đã đổi trạng thái --no-sor thành: $NO_SOR"
+      ;;
+    8)
+      read -rp "Nhập độ sâu cây bát phân Poisson (depth) [$DEPTH]: " NEW_VAL
+      if [ -n "$NEW_VAL" ]; then DEPTH="$NEW_VAL"; fi
+      ;;
+    9)
+      read -rp "Nhập ngưỡng phân vị mật độ (density-quantile) [$DENSITY_Q]: " NEW_VAL
+      if [ -n "$NEW_VAL" ]; then DENSITY_Q="$NEW_VAL"; fi
+      ;;
+    10)
+      read -rp "Nhập số mặt tam giác mục tiêu (faces) [$FACES]: " NEW_VAL
+      if [ -n "$NEW_VAL" ]; then FACES="$NEW_VAL"; fi
+      ;;
+    11)
+      read -rp "Nhập góc nghiêng tối đa (nav-slope) [$NAV_SLOPE]: " NEW_VAL
+      if [ -n "$NEW_VAL" ]; then NAV_SLOPE="$NEW_VAL"; fi
+      ;;
+    *)
+      echo "Lựa chọn không hợp lệ."
+      ;;
+  esac
+done
+
+CMD=("$BINARY" -i "$SELECTED" -o "$OUTPUT_FILE")
+
+if [ -n "$PRUNE" ]; then
+  CMD+=(-p "$PRUNE")
+fi
+
+if [ -n "$MAX_SCALE" ]; then
+  CMD+=(--max-scale "$MAX_SCALE")
+fi
+
+if [ "$NO_SOR" = "true" ]; then
+  CMD+=(--no-sor)
 else
-  OPACITY="$OPACITY_DEFAULT"
-  DEPTH="$DEPTH_DEFAULT"
-  DENSITY_Q="$DENSITY_Q_DEFAULT"
-  FACES="$FACES_DEFAULT"
-  NAV_SLOPE="$NAV_SLOPE_DEFAULT"
+  if [ -n "$SOR_K" ]; then
+    CMD+=(--sor-k "$SOR_K")
+  fi
+  if [ -n "$SOR_STD" ]; then
+    CMD+=(--sor-std "$SOR_STD")
+  fi
+fi
+
+if [ -n "$DEPTH" ]; then
+  CMD+=(-d "$DEPTH")
+fi
+
+if [ -n "$DENSITY_Q" ]; then
+  CMD+=(--density-quantile "$DENSITY_Q")
+fi
+
+if [ -n "$FACES" ]; then
+  CMD+=(-f "$FACES")
+fi
+
+if [ -n "$NAV_SLOPE" ]; then
+  CMD+=(--nav-slope "$NAV_SLOPE")
 fi
 
 echo ""
-echo "Đang dùng các tham số:"
-echo "Ngưỡng opacity    : $OPACITY"
-echo "Độ sâu Poisson    : $DEPTH"
-echo "Ngưỡng density    : $DENSITY_Q"
-echo "Số mặt mục tiêu   : $FACES"
-echo "Góc nav slope     : $NAV_SLOPE°"
+echo "Command chạy:"
+echo "${CMD[*]}"
 echo ""
 
-read -rp "Nhấn Enter để chạy pipeline (hoặc Ctrl+C để hủy)... "
-
-# ── Run pipeline ─────────────────────────────────────────
-"$BINARY" \
-  -i "$SELECTED" \
-  -o "$OUTPUT_FILE" \
-  -p "$OPACITY" \
-  -d "$DEPTH" \
-  --density-quantile "$DENSITY_Q" \
-  -f "$FACES" \
-  --nav-slope "$NAV_SLOPE"
+read -rp "Nhấn Enter để bắt đầu chạy"
+"${CMD[@]}"
