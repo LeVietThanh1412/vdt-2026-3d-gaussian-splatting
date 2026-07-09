@@ -196,18 +196,6 @@ Luồng xử lý thời gian thực của công cụ `gsplat_ar` in chi tiết t
 - `README.md`: hướng dẫn riêng cho web demo.
 - `ChristmasTree.glb`: file demo mẫu để test nhanh.
 
-#### `plans/`
-- `01_dependencies.md`: kế hoạch cài môi trường và dependency.
-- `02_structure.md`: mô tả cấu trúc thư mục mục tiêu.
-- `03_core_headers.md`: thiết kế các header lõi.
-- `04_src_impl.md`: kế hoạch hiện thực các file `.cpp`.
-- `05_web_demo.md`: kế hoạch demo web.
-- `06_scripts.md`: kế hoạch các script hỗ trợ.
-- `07_algorithm_details.md`: ghi chú chi tiết thuật toán.
-- `image_n.md`: ghi chú hoặc nội dung liên quan ảnh minh họa.
-- `technology_used.md`: danh sách công nghệ sử dụng.
-
-#### `reports/`
 - `reports/report.tex`: file LaTeX cho báo cáo học thuật.
 - `reports/images/`: ảnh minh họa dùng trong báo cáo.
 - `reports/out/`: output sau khi build báo cáo, ví dụ PDF.
@@ -340,4 +328,4 @@ Sau đó mở:
 http://localhost:8000
 ```
 
-Nếu muốn test trên điện thoại, dùng cùng mạng LAN và mở bằng IP máy chạy server.
+Nếu muốn test trên điện thoại, dùng cùng mạng LAN và mở bằng IP máy chạy server.
