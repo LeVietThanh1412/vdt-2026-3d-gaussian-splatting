@@ -1,5 +1,11 @@
 # 3DGS AR Pipeline
 
+![C++](https://img.shields.io/badge/C%2B%2B-17-blue?logo=c%2B%2B)
+![CMake](https://img.shields.io/badge/CMake-3.15%2B-blue?logo=cmake)
+![Open3D](https://img.shields.io/badge/Open3D-0.19.0-orange)
+![Docker](https://img.shields.io/badge/Docker-Supported-blue?logo=docker)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
 > Công cụ CLI viết bằng C++ để xử lý dữ liệu 3D Gaussian Splatting, dựng mesh, tối ưu hóa và xuất `.glb` cho Web/AR.
 
 ## Mục tiêu
@@ -224,16 +230,6 @@ Luồng xử lý thời gian thực của công cụ `gsplat_ar` in chi tiết t
 sudo pacman -S base-devel cmake git curl zip unzip tar pkgconf python
 ```
 
-## vcpkg là gì
-
-`vcpkg` là công cụ quản lý thư viện C/C++. Trong project này nó dùng để cài các dependency lớn như `CLI11`.
-
-- `vcpkg.json`: khai báo dependency của project
-- `vcpkg/`: source code của tool vcpkg
-- `vcpkg_installed/`: thư mục chứa các package đã được cài cho project
-
-Nếu đã clone sẵn `vcpkg/` trong repo, chỉ cần trỏ biến môi trường:
-
 ```bash
 export VCPKG_ROOT=/mnt/Data1/LeVietThanh1412-Product/vdt-2026-3d-gaussian-splatting/vcpkg
 export PATH=$VCPKG_ROOT:$PATH
@@ -329,3 +325,20 @@ http://localhost:8000
 ```
 
 Nếu muốn test trên điện thoại, dùng cùng mạng LAN và mở bằng IP máy chạy server.
+
+## Đóng góp (Contributing)
+
+Mọi đóng góp nhằm cải thiện pipeline đều được trân trọng. Bạn có thể:
+1. Fork dự án.
+2. Tạo nhánh tính năng mới (`git checkout -b feature/AmazingFeature`).
+3. Commit các thay đổi của bạn (`git commit -m 'Add some AmazingFeature'`).
+4. Push lên nhánh (`git push origin feature/AmazingFeature`).
+5. Mở một Pull Request.
+
+## Giấy phép (License)
+
+Dự án này được phân phối dưới giấy phép MIT. Xem chi tiết tại [LICENSE](file:///e:/LeVietThanh1412-Product/vdt-2026-3d-gaussian-splatting/LICENSE).
+
+## Liên hệ & Hỗ trợ
+
+Nếu bạn gặp bất kỳ lỗi nào hoặc có đề xuất tính năng mới, vui lòng mở một Issue trên GitHub.
