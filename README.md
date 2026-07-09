@@ -212,11 +212,6 @@ Luồng xử lý thời gian thực của công cụ `gsplat_ar` in chi tiết t
 - `reports/images/`: ảnh minh họa dùng trong báo cáo.
 - `reports/out/`: output sau khi build báo cáo, ví dụ PDF.
 
-#### `build/`, `vcpkg/`, `vcpkg_installed/`
-- `build/`: thư mục build do CMake sinh ra, chứa file tạm, object file, cache, executable.
-- `vcpkg/`: source code của vcpkg nếu clone local trong repo.
-- `vcpkg_installed/`: nơi lưu package đã cài hoặc artifact liên quan của vcpkg.
-
 ## Thư viện và công nghệ
 
 - C++17
@@ -345,36 +340,4 @@ Sau đó mở:
 http://localhost:8000
 ```
 
-Nếu muốn test trên điện thoại, dùng cùng mạng LAN và mở bằng IP máy chạy server.
-
-## Thư mục `build/` là gì
-
-`build/` là thư mục CMake sinh ra khi build ngoài source tree.
-
-- chứa file tạm, file object, cache CMake, executable build ra
-- không nên commit lên git
-- có thể xóa an toàn nếu muốn build lại từ đầu
-
-## Thư mục `vcpkg_installed/` là gì
-
-Đây là nơi vcpkg lưu package đã cài cho project hoặc file cài đặt liên quan.
-
-- không cần chỉnh tay nếu không biết rõ
-- nếu muốn cài lại dependency thì có thể xóa rồi chạy `vcpkg install` lại
-
-## Thứ tự code khuyến nghị nếu làm lại từ đầu
-
-1. `include/core/types.hpp`
-2. `include/io/ply_reader.hpp` và `src/io/ply_reader.cpp`
-3. `include/processor/gsplat_filter.hpp` và `src/processor/gsplat_filter.cpp`
-4. `include/io/glb_exporter.hpp` và `src/io/glb_exporter.cpp`
-5. `include/pipeline/optimization_pipeline.hpp` và `src/pipeline/optimization_pipeline.cpp`
-6. `src/main.cpp`
-7. `mesh_generator`, `mesh_optimizer`, `ar_extractor`
-8. `tests/`
-9. `web_demo/`
-
-## Ghi chú
-
-- Nếu muốn hiểu dự án nhanh, đọc theo thứ tự: `README.md` -> `include/core/types.hpp` -> `src/main.cpp` -> `src/pipeline/optimization_pipeline.cpp`.
-- Nếu build lỗi dependency, kiểm tra lại `VCPKG_ROOT`, `Open3D_DIR` và nội dung `vcpkg.json`.
+Nếu muốn test trên điện thoại, dùng cùng mạng LAN và mở bằng IP máy chạy server.
